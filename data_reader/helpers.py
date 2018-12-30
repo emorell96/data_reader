@@ -21,6 +21,8 @@ def basic_read_string(str, date_time_patern):
         it follows [decimal-numbers][unit(a set of non blank characters)]_[DATETIME].[EXTENSION]")
         quit()
     results[2] = datetime.strptime(results[2], date_time_patern)
+    #sanitize the results (strip and lower)
+    results = [x.strip().lower() for x in results]
     return results
 
     
