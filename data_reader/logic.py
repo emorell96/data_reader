@@ -1,6 +1,11 @@
 import os
 import helpers as aux
 import sys
+#here the file structure is rabi_fitting
+#                                    | ---  data_reader
+##                                   |----  fitting
+#                                       etc
+#adapt to your own system. You need to do sys.path.append("path\to\module") so module is the main folder where the package resides.
 sys.path.append(r'F:\Onedrive\Academic Files\LKB\rabi_fitting')
 import data_reader as dr
 
