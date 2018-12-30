@@ -32,12 +32,15 @@ class DataFile:
         valid = True
         if("ext" in kargs):
             extensions = kargs.get("ext")
+            extensions = [x.strip().lower() for x in extensions]
             valid *= (("."+self.extension) in extensions)
         if("value" in kargs):
             values = kargs.get("value")
+            values = [x.strip().lower() for x in values]
             valid *= (self.value in values)
         if("unit" in kargs):
             units = kargs.get("unit")
+            units = [x.strip().lower() for x in units] #makes sure that the lower or capitalletter wont affect a comparison
             valid *= (self.unit in units) 
         #as you can see you can add many more criteria in a very general way.
         #you just have to define put arg1 = value1 and create the code here to deal
@@ -215,6 +218,29 @@ class DataSet:
                 vals.append((file.value, file.unit))
                 continue
         return vals
+    
+    def filter(self, **kwargs):
+        """
+        You can add filter_note = "" which will be used as note on the new DataSet.
+        If no filter_note is given, then the note of the old dataset will be used.
+        Same filtering idea as in the construction of the object.
+        By extension: ext = ('.csv', '.txt')
+        By value: value = "0800"
+        By unit: unit = "mA"
+        Returns NEW dataset. It doesnt modify the old dataset.
+        """
+        #Clean list
+        FilteredDataFiles = []
+        #iterate trhough all files:
+        for file in self:
+            #make sure the current file is a valid file:
+            if file.isvalidselection(**kwargs):
+                FilteredDataFiles.append(file)
+        if len(FilteredDataFiles) == 0:
+            print("Warning: New DataSet is empty")
+        note = self.Note if not ("filter_note" in kwargs) else kwargs.get("note").strip()
+        return DataSet(FilteredDataFiles, note = note)
+
 
     
 
