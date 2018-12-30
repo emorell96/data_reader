@@ -14,8 +14,10 @@ def basic_read_string(str, date_time_patern):
     #use regular expressions to get the value, unit, and datetime and extension
     regex = re.compile(r"(\d+)(\S+)_(\S+)\.([a-z]+)")
     results = []
+    prefix = ""
     try:
         results = list(regex.findall(str)[0])
+        prefix = regex.sub("", str).strip().lower()
     except:
         print("The string provided is badly formatted. We couldn't match the pattern on the string. Make sure \
         it follows [decimal-numbers][unit(a set of non blank characters)]_[DATETIME].[EXTENSION]")
@@ -23,7 +25,7 @@ def basic_read_string(str, date_time_patern):
     results[2] = datetime.strptime(results[2], date_time_patern)
     #sanitize the results (strip and lower)
     results = [x.strip().lower() for x in results]
-    return results
+    return [prefix] + results
 
     
     

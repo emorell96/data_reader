@@ -14,6 +14,7 @@ class DataFile:
     unit = ""
     datetime = ""
     extension = ""
+    prefix = ""
     def __init__(self, fname, folder = "", pattern = "%Y-%m-%d-%H.%M.%S"): #https://docs.python.org/2/library/re.html
         if folder == "": #fname == full folder location
             self.directory, self.filename = os.path.split(fname)
@@ -22,7 +23,7 @@ class DataFile:
             self.directory = folder
         #pattern defines the pattern for the date time, the rest is fixed such as [decimal-numbers][unit(a set of non blank characters)]_[DATETIME].[EXTENSION]
         #You could add more advanced patterns in the helpers.py
-        self.value, self.unit, self.datetime, self.extension = aux.basic_read_string(fname, pattern)
+        self.prefix, self.value, self.unit, self.datetime, self.extension = aux.basic_read_string(fname, pattern)
     def isvalidselection(self, **kargs):
         """
         This function does all the logic behind the filtering decision.
@@ -42,6 +43,10 @@ class DataFile:
             units = kargs.get("unit")
             units = [x.strip().lower() for x in units] #makes sure that the lower or capitalletter wont affect a comparison
             valid *= (self.unit in units) 
+        if("prefix" in kargs):
+            prefixes = kargs.get("prefix")
+            prefixes = [x.strip().lower() for x in prefixes]
+            valid *= self.prefix != "" and (self.prefix in prefixes)
         #as you can see you can add many more criteria in a very general way.
         #you just have to define put arg1 = value1 and create the code here to deal
         #with this case. You would write something like 
