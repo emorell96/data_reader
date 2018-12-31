@@ -79,6 +79,7 @@ class DataFile:
         returns the full path of the file
         """
         return os.path.join(self.directory, self.filename)
+    
 
 # class IterDataSet:
 #     def __iter__(cls):
@@ -147,6 +148,8 @@ class DataSet:
         Filter by extensions using ext = ('.csv', '.txt') or ext = '.csv' for example. 
         Filter by value using values = ('0800', '0900') for example.
         Filter by unit using unit = 'ma'.
+
+        Use custom_class to use classes which are derivated from DataFile through inheritance.
         """
         data = []
         for path in pathlist:
@@ -206,7 +209,11 @@ class DataSet:
         
         tmpFile = DataFile(path)
         if tmpFile.isvalidselection(**kargs):
-            prev_list.append(DataFile(path))
+            if "custom_class" in kargs:
+                cc = kargs.get("custom_class")
+                prev_list.append(cc(path))
+            else:
+                prev_list.append(DataFile(path))
         else:
             print("-------------------------")
             print("Current file: "+path)
