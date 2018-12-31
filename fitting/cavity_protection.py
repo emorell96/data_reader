@@ -2,7 +2,7 @@
 """
 Created on Wed Sep 12 10:22:51 2018
 
-@author: atomchips
+@author: atomchips/Enrique Morell
 """
 
 import numpy as np
@@ -21,37 +21,36 @@ from scipy.stats import norm
 from scipy.special import jv as jv
 import csv
 import shutil, os
+
+import data_reader as dr
 #''''''''LIRE''''''''':
 #creation d'un fichier auxiliaire qui a toutes les fonctions qui sont utilles au code mais ne sont pas l'objectif du fichier.
 #utiliser from file import function1, function2 permet d'utiliser les fonctions sans ecrire file.function1 mais simplement function1
-from helpers import find_maximum, load_data
+from helpers import find_maximum
 #os.chdir('D:\\Users\\atomchips\\Desktop\\Data_loading_MOT_3')
 #root='D:\\Users\\atomchips\\Desktop\\Data_loading_MOT_3'
 from fit_functions import * #l'asterisque veux dire importer tout
 plt.close('all')
 #Ici c'est pour tout remettre en phase à partir du calcul de la position max de chaque trace     
-def group(root,start = 0,end = 98):
-    tab_name=find_file(root,start,end)
-    #start=0 
-    #end=98
-    Max_1=np.array([])
-    Max_2=np.array([])
-    os.chdir(Folder+root) #depends on a global variable called folder!!
-    list = os.listdir(Folder+root) #lists all files in the directory
-    for k in range(0,np.size(tab_name)):
-        for i in range(0,np.size(list)):
-            
-            if list[i][0:10]==tab_name[k]+'_2018': #14 list[i][0:14]=='2dmot'+tab_name[k]  list[i][0:10]==tab_name[k]
-                a,b=load_data(list[i])
-                a=a[start:end]
-                b=b[start:end]
-                x1=a[start:end/2]
-                y1=b[start:end/2]
-                x2=a[end/2:end]
-                y2=b[end/2:end]
-                max_1=np.argmax(y1)
-                max_2=np.argmax(y2)
-        
+
+
+
+def group(dataset, start=0, end=98):
+    """
+    Dataset from the module data_reader.
+    It should have been properly filtered using the right filters.
+    """
+    maxlist_1 = []
+    maxlist_2 = []
+    for file in dataset:
+        x, y = np.loadtxt(file.path, unpack=True)
+        x, y = x[start:end], y[start:end]
+        x1=x[start:int(end/2)]
+        y1=b[start:int(end/2)]
+        x2=a[int(end/2):end]
+        y2=b[int(end/2):end] #will not work in python 3 as end/2 may be a float
+        max_1=np.argmax(y1)
+        max_2=np.argmax(y2)
         Max_1=np.append(Max_1, max_1)
         Max_2=np.append(Max_2, max_2)
     
@@ -65,10 +64,11 @@ def group_2(root,start,end):
     
     os.chdir(Folder+root)
     list = os.listdir(Folder+root)
-    for k in range(0,np.size(tab_name)):
+    for k in range(0,np.size(tab_name)):#goes through all files. Will be replaced by iterating through a dataset
         for i in range(0,np.size(list)):
-            
+            #filtering which will be done with a data set
             if list[i][0:16]=='power'+tab_name[k]+list[i][9:11]+'_2018': #14 list[i][0:14]=='2dmot'+tab_name[k]  list[i][0:10]==tab_name[k]
+                #this is what really is done to one file.
                 a,b=load_data(list[i])
                 maxi=np.argmax(b)
         
