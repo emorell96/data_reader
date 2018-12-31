@@ -1,5 +1,5 @@
 import os
-import helpers as aux
+import data_reader.helpers as aux
 import sys
 #here the file structure is rabi_fitting
 #                                    | ---  data_reader
