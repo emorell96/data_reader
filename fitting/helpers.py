@@ -10,12 +10,7 @@ def find_maximum(tab):
         
     return indice
 
-def load_data(filename):
 
-    a=np.genfromtxt(filename,delimiter='\t')
-    x=a[:,0]
-    y=a[:,1]
-    return x,y
     
 # Ici find_file me permet de sortir les noms de chzque fichier de donnée. Par exemple si j'ai pris des données à differentes valeurs de courant. ça va juste me sortir chaque valeur de courant. Ensuite j'utilise ces valeurs de courant pour 
     #pour appeler uniquement les données de chaque courant (il peur y avoir plusieurs traces à meme courant pour moyenner)
@@ -29,7 +24,7 @@ from fitting import VERBOSE_LVL   #permet l'acces aux constantes
 
 def find_file(root,start,end, folder = 'D:\\Users\\atomchips\\Desktop\\Cavity_protection_20181206\\2018-12-12\\'): #folder est mqintenant un argument optionel
     '''
-        This function is deprecated use the class which reads the files and provides all the info contained in the files
+    This function is deprecated use the class which reads the files and provides all the info contained in the files
     '''
     
     os.chdir(folder+root)
