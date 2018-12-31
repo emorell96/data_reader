@@ -22,9 +22,10 @@ def basic_read_string(str, date_time_patern):
         print("The string provided is badly formatted. We couldn't match the pattern on the string. Make sure \
         it follows [decimal-numbers][unit(a set of non blank characters)]_[DATETIME].[EXTENSION]")
         quit()
-    results[2] = datetime.strptime(results[2], date_time_patern)
     #sanitize the results (strip and lower)
     results = [x.strip().lower() for x in results]
+    results[2] = datetime.strptime(results[2], date_time_patern)
+    
     return [prefix] + results
 
     
