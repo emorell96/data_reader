@@ -74,6 +74,12 @@ class DataFile:
         #     
 
         return valid
+    def path(self):
+        """
+        returns the full path of the file
+        """
+        return os.path.join(self.directory, self.filename)
+
 # class IterDataSet:
 #     def __iter__(cls):
 #         return iter(cls.DataFiles)
