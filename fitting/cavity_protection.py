@@ -94,7 +94,7 @@ def Data_Rabi(root,start,end):
     os.chdir(Folder+root)
     list = os.listdir(Folder+root)
     print(list)
-    t=300/16
+    t=300/16 #all of these outside general functions
     
     splitting=[]
     width_1=[]
@@ -104,7 +104,7 @@ def Data_Rabi(root,start,end):
     
     depth=[]
    #Ici je cherche tous les fichiers ayant par exemple la meme profondeur de piege
-    Natoms= find_file(root,start,end)
+    Natoms= find_file(root,start,end) #filtering done through data set
     print('Natom est')
     print (Natoms)
     Current_mot=[]
@@ -136,7 +136,7 @@ def Data_Rabi(root,start,end):
         for i in range (0,np.size(list)):
 
 
-            
+            #filtering done previously or creation of different data sets to handle different files.
             if list[i][0:16]=='power'+Natoms[k]+list[i][9:11]+'_2018': #list[i][0:16]=='power'+Natoms[k]+list[i][9:11]+'_2018' //list[i][0:11]==Natoms[k]+'_2018'// #list[i][0:14]=='2dmot'+Natoms[k]  list[i][0:10]==Natoms[k]
                 print(Natoms[k])
                 x,y=load_data(list[i])
