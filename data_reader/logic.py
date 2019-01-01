@@ -47,6 +47,7 @@ class DataFile:
         if("unit" in kargs):
             units = kargs.get("unit")
             units = [x.strip().lower() for x in units] #makes sure that the lower or capitalletter wont affect a comparison
+            #print("units of the file: " + str(units))
             valid *= (self.unit in units) 
         if("prefix" in kargs):
             prefixes = kargs.get("prefix")
@@ -150,8 +151,10 @@ class DataSet:
         the whole directory while be imported.
         set ignore_empty_fn = True to disable this default behaviour.
         Filter by extensions using ext = ('.csv', '.txt') or ext = '.csv' for example. 
-        Filter by value using values = ('0800', '0900') for example.
-        Filter by unit using unit = 'ma'.
+        Filter by value using value = ('0800', '0900') for example.
+        Filter by unit using unit = ('ma', ).
+
+        ALL FILTERS NEED TO BE PUT IN TUPLES EVEN IF A SINGLE VALUE. TODO: Allow for string input.
 
         Use type to use classes which are derivated from DataFile through inheritance.
         """
@@ -244,7 +247,9 @@ class DataSet:
                 vals.append((file.value, file.unit))
                 continue
         return vals
-    
+    def applyfunctionglobally(self, function, *args, **kwargs):
+        for file in self:
+            function(file, *args, **kwargs)
     def filter(self, **kwargs):
         """
         You can add filter_note = "" which will be used as note on the new DataSet.
