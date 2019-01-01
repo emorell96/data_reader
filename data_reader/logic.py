@@ -79,6 +79,10 @@ class DataFile:
         returns the full path of the file
         """
         return os.path.join(self.directory, self.filename)
+    def __str__(self):
+        return self.path()
+    def __repr__(self):
+        return self.path()
     
 
 # class IterDataSet:
@@ -220,6 +224,9 @@ class DataSet:
     def append(self, dataset):
         return None
 
+    def __str__(self):
+        return self.Note + str(self.DataFiles)
+
     def __iter__(self):
         return iter(self.DataFiles)
 
@@ -271,7 +278,8 @@ class DataSet:
 
 if (__name__ == '__main__'):
     path = r"F:\Onedrive\Academic Files\LKB\rabi_fitting\data\0800ma_2018-12-19-10.44.36.csv"
-    # file = DataFile(path)
+    file = DataFile(path)
+    print(file)
     # print(file.directory)
     # print(file.filename)
     # print(file.extension)
@@ -325,3 +333,4 @@ if (__name__ == '__main__'):
     for file in files:
         print(file.value)
     print(len(files))
+    print(files)
