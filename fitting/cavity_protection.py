@@ -28,7 +28,7 @@ import data_reader as dr
 #utiliser from file import function1, function2 permet d'utiliser les fonctions sans ecrire file.function1 mais simplement function1
 from helpers import find_maximum
 #os.chdir('D:\\Users\\atomchips\\Desktop\\Data_loading_MOT_3')
-#root='D:\\Users\\atomchips\\Desktop\\Data_loading_MOT_3'
+#basename='D:\\Users\\atomchips\\Desktop\\Data_loading_MOT_3'
 from fit_functions import * #l'asterisque veux dire importer tout
 plt.close('all')
 #Ici c'est pour tout remettre en phase à partir du calcul de la position max de chaque trace     
@@ -57,19 +57,19 @@ def group(dataset, start=0, end=98):
     return Max_1, Max_2
     
     
-def group_2(root,start,end):
-    tab_name=find_file(root,start,end)
+def group_2(basename,start,end):
+    tab_name=find_file(basename,start,end)
 
     Max=np.array([])
     
-    os.chdir(Folder+root)
-    list = os.listdir(Folder+root)
+    os.chdir(Folder+basename)
+    pathlist = os.listdir(Folder+basename)
     for k in range(0,np.size(tab_name)):#goes through all files. Will be replaced by iterating through a dataset
-        for i in range(0,np.size(list)):
+        for i in range(0,np.size(pathlist)):
             #filtering which will be done with a data set
-            if list[i][0:16]=='power'+tab_name[k]+list[i][9:11]+'_2018': #14 list[i][0:14]=='2dmot'+tab_name[k]  list[i][0:10]==tab_name[k]
+            if pathlist[i][0:16]=='power'+tab_name[k]+pathlist[i][9:11]+'_2018': #14 pathlist[i][0:14]=='2dmot'+tab_name[k]  pathlist[i][0:10]==tab_name[k]
                 #this is what really is done to one file.
-                a,b=load_data(list[i])
+                a,b=load_data(pathlist[i])
                 maxi=np.argmax(b)
         
         Max=np.append(Max, maxi)
@@ -85,15 +85,15 @@ def group_2(root,start,end):
     
 #☺ça c'est la fonction principale    
 
-def Data_Rabi(root,start,end):
+def Data_Rabi(basename,start,end):
     plt.close('all')
     #for 2ms
     #slope=1200/0.0002851
     #for 10ms
     slope=1200/0.00155
-    os.chdir(Folder+root)
-    list = os.listdir(Folder+root)
-    print(list)
+    os.chdir(Folder+basename)
+    pathlist = os.listdir(Folder+basename)
+    print(pathlist)
     t=300/16 #all of these outside general functions
     
     splitting=[]
@@ -104,47 +104,45 @@ def Data_Rabi(root,start,end):
     
     depth=[]
    #Ici je cherche tous les fichiers ayant par exemple la meme profondeur de piege
-    Natoms= find_file(root,start,end) #filtering done through data set
+    Natoms= find_file(basename,start,end) #filtering done through data set #list all "prefixes" of the files
     print('Natom est')
-    print (Natoms)
-    Current_mot=[]
+    print(Natoms) #creation d'un __str__ done
+    Current_mot=[] #selection of mot files
     
-    
-#   
-#    print('max vaut')
-    #Max_1, Max_2=group(root,start,end)  
+    #   
+    print('max vaut')
+    #Max_1, Max_2=group(basename,start,end)  
     
     
     
     #ici je cherche les max de chaque trace
-    Max=group_2(root,start,end) 
-#    print Max_2
-#    print Max_1
-#    
-    for k in range (0,np.size(Natoms)):#np.size(Natoms)
+    #Max=group_2(basename,start,end) #    print Max_2
+    #print(Max_1)
+    #I feel like this part will have to be implemented in RabiFile.
+    for k in range (0,np.size(Natoms)):#np.size(Natoms) #iteration through all files in Natoms preselected in the dataset in the new version
         count=0
-        a,b=load_data(list[0])
+        a,b=load_data(pathlist[0]) #outsourced to RabiFile
         
         
-        res_x=np.zeros(np.size(a))[0:98]
+        res_x=np.zeros(np.size(a))[0:98] #array with zeros for x
         
-        res_y=np.zeros(np.size(b))[0:98]
+        res_y=np.zeros(np.size(b))[0:98] #array with zeros for y
      
         
-#        depth=np.append(depth,(1600/100)*int(root[0:2]))
+        depth=np.append(depth,(1600/100)*int(basename[0:2]))
         
-        for i in range (0,np.size(list)):
+        for i in range (0,np.size(pathlist)):
 
 
             #filtering done previously or creation of different data sets to handle different files.
-            if list[i][0:16]=='power'+Natoms[k]+list[i][9:11]+'_2018': #list[i][0:16]=='power'+Natoms[k]+list[i][9:11]+'_2018' //list[i][0:11]==Natoms[k]+'_2018'// #list[i][0:14]=='2dmot'+Natoms[k]  list[i][0:10]==Natoms[k]
+            if pathlist[i][0:16]=='power'+Natoms[k]+pathlist[i][9:11]+'_2018': #pathlist[i][0:16]=='power'+Natoms[k]+pathlist[i][9:11]+'_2018' //pathlist[i][0:11]==Natoms[k]+'_2018'// #pathlist[i][0:14]=='2dmot'+Natoms[k]  pathlist[i][0:10]==Natoms[k]
                 print(Natoms[k])
-                x,y=load_data(list[i])
+                x,y=load_data(pathlist[i])
                 x=x[0:98]
                 y=y[0:98]
-#                fig=plt.figure()
-#                plt.plot(x,y)
-#                plt.show()
+                # fig=plt.figure()
+                # plt.plot(x,y)
+                # plt.show()
                 
                 
                 #ici je remets tout en phase. Delta c'est la distance en indice entre les max
@@ -169,46 +167,46 @@ def Data_Rabi(root,start,end):
                 #ici c'est quand j'avais des traces presentant le doublet de Rabi, je coupais le tableau en deux pour calculer dans chaque partie le max
                
                 
-#                x1=x[0:98/2]
-#                y1=y[0:98/2]
-#                x2=x[98/2:98]
-#                y2=y[98/2:98]
-#                delta_1=np.argmax(y1)-Max_1[k]
-#                delta_2=np.argmax(y2)-Max_2[k]
-#
-#            
-#                if delta_1>0:
-#                    y1=y1[delta_1:98/2]
-#                    tab=np.zeros(delta_1)
-#                    y1=np.append(y1,tab)
-#                
-#                
-#                
-#                if delta_1<0:
-#                
-#                    tab=np.zeros(-delta_1)
-#                    y1=np.append(tab,y1)
-#                    y1=y1[0:184]
-#                
-#                
-#                
-#                if delta_2>0:
-#                    y2=y2[delta_2:98/2]
-#                    tab=np.zeros(delta_2)
-#                    y2=np.append(y2,tab)
-#                
-#                
-#                
-#                if delta_2<0:
-#                
-#                    tab=np.zeros(-delta_2)
-#                    y2=np.append(tab,y2)
-#                    y2=y2[0:184]
-#                
-#                Y=np.append(y1,y2)
-#               
-#                
-#                X=np.append(x1,x2)
+            #    x1=x[0:98/2]
+            #    y1=y[0:98/2]
+            #    x2=x[98/2:98]
+            #    y2=y[98/2:98]
+            #    delta_1=np.argmax(y1)-Max_1[k]
+            #    delta_2=np.argmax(y2)-Max_2[k]
+
+           
+            #    if delta_1>0:
+            #        y1=y1[delta_1:98/2]
+            #        tab=np.zeros(delta_1)
+            #        y1=np.append(y1,tab)
+               
+               
+               
+            #    if delta_1<0:
+               
+            #        tab=np.zeros(-delta_1)
+            #        y1=np.append(tab,y1)
+            #        y1=y1[0:184]
+               
+               
+               
+            #    if delta_2>0:
+            #        y2=y2[delta_2:98/2]
+            #        tab=np.zeros(delta_2)
+            #        y2=np.append(y2,tab)
+               
+               
+               
+            #    if delta_2<0:
+               
+            #        tab=np.zeros(-delta_2)
+            #        y2=np.append(tab,y2)
+            #        y2=y2[0:184]
+               
+            #    Y=np.append(y1,y2)
+              
+               
+            #    X=np.append(x1,x2)
           
                 
                 
@@ -216,21 +214,21 @@ def Data_Rabi(root,start,end):
                 res_x=x
                 res_y=res_y+y
                 count=count+1
-##            
+            
         res_x=res_x
-#       
+       
         res_y=res_y/count
         maxs=find_maximum(res_y)
         print(maxs)
-#        Max=find_maximum(res_y)
-#        print('le max vaut')
-#        print(Max)
-#        print(res_x[Max[2]]-res_x[Max[1]])
-#        fig1=plt.figure()
-#        plt.plot(res_x,res_y)
-#        plt.title(Natoms[k])
-#        plt.show()
-#        
+    #    Max=find_maximum(res_y)
+    #    print('le max vaut')
+    #    print(Max)
+    #    print(res_x[Max[2]]-res_x[Max[1]])
+    #    fig1=plt.figure()
+    #    plt.plot(res_x,res_y)
+    #    plt.title(Natoms[k])
+    #    plt.show()
+      
         
         
         
@@ -243,10 +241,10 @@ def Data_Rabi(root,start,end):
         plt.title(Natoms[k]+'flux_photon/s='+str(number_photon))
         plt.show()
         os.chdir('D:\\Users\\atomchips\\Desktop\\Cavity_protection_20181206\\curve_20181218\\pic_gauche')
-#        np.savetxt(Natoms[k][0:4]+'mv'+root+'.txt', np.transpose([res_x, res_y]),delimiter='\t',header='\t'.join(['temps','ampltiude']))
+#        np.savetxt(Natoms[k][0:4]+'mv'+basename+'.txt', np.transpose([res_x, res_y]),delimiter='\t',header='\t'.join(['temps','ampltiude']))
         #np.savetxt('data'+Natoms[k][0:4]+'mv'+'.txt', np.transpose([res_x, res_y]),delimiter='\t',header='\t'.join(['temps','ampltiude']))
         fig1.savefig(Natoms[k][0:4]+'uW'+'.png')
-        os.chdir(Folder+root)
+        os.chdir(Folder+basename)
 #        print(Natoms[k])
         ################################################
         
@@ -263,28 +261,28 @@ def Data_Rabi(root,start,end):
 #        datax_2=np.array([])
 #        datay_1=np.array([])
 #        datay_2=np.array([])
-#        
+       
 #        Testx_1=res_x[0:184]
 #        Testx_2=res_x[184:368]
-#        
+       
 #        Testy_1=res_y[0:184]
 #        Testy_2=res_y[184:368]
 #        indice_1=find_maximum(Testy_1)
 #        indice_2=find_maximum(Testy_2)
 #        print(indice_2)
-#        
+       
 #        for i in range (0,np.size(indice_1)):
 #            datax_1=np.append(datax_1,Testx_1[indice_1[i]])
 #            datay_1=np.append(datay_1,Testy_1[indice_1[i]])
-##            print ('valeur ma est')
-##            print(Testy_1[indice_1[i]])
-#        
+# #            print ('valeur ma est')
+# #            print(Testy_1[indice_1[i]])
+       
 #        for i in range (0,np.size(indice_2)):
 #            datax_2=np.append(datax_2,Testx_2[indice_2[i]])
 #            datay_2=np.append(datay_2,Testy_2[indice_2[i]])
-#        
-#        
-#
+       
+       
+
 #        pp_1=[datay_1[np.argmax(datay_1)],datax_1[np.argmax(datay_1)],datax_1[np.argmax(datay_1)+1]-datax_1[np.argmax(datay_1)-1],0]
 #        pp_2=[datay_2[np.argmax(datay_2)],datax_2[np.argmax(datay_2)],datax_1[np.argmax(datay_1)+1]-datax_1[np.argmax(datay_1)-1],0]
 #        print (datay_2)
@@ -294,7 +292,7 @@ def Data_Rabi(root,start,end):
 #        datax_1=np.delete(datax_1,ind_1)
 #        datay_2=np.delete(datay_2,ind_2)
 #        datax_2=np.delete(datax_2,ind_2)
-#        
+       
 #        poppt2, pcov2 = curve_fit(lorentz, datax_2, datay_2, pp_2)
 #        poppt1, pcov1 = curve_fit(lorentz, datax_1, datay_1, pp_1)
 #        splitting=np.append(splitting,slope*(poppt2[1]-poppt1[1])/2)
@@ -302,8 +300,8 @@ def Data_Rabi(root,start,end):
 #        Current_mot=np.append(Current_mot,int(Natoms[k][0:3]))
 #        width_1=np.append(width_1, slope*poppt1[2])
 #        width_2=np.append(width_2, slope*poppt2[2])
-#        
-#        
+       
+       
 #        print(datay_2)
 #        delta=slope*(datax_2[1]-datax_2[0])
 #        print(Natoms[k])
@@ -313,30 +311,30 @@ def Data_Rabi(root,start,end):
 #        plt.plot(res_x,res_y)
 #        plt.plot(datax_1,lorentz(datax_1,*poppt1))
 #        plt.plot(datax_2,lorentz(datax_2,*poppt2))
-#        plt.title(Natoms[k][0:4]+'mA'+root)
+#        plt.title(Natoms[k][0:4]+'mA'+basename)
             
-        #################################################################################################
+#         ################################################################################################
         
         
         
-        ########## Fit sans prendre les max locaux. Ici c'est le fit normal des traces. Je coupe les données en deux car j'ai une doublet de rabi. Je fitte independamment l'un et l'autre. Je pourrais utliser la double lorentzienne ici mais bon^^
+#         ######### Fit sans prendre les max locaux. Ici c'est le fit normal des traces. Je coupe les données en deux car j'ai une doublet de rabi. Je fitte independamment l'un et l'autre. Je pourrais utliser la double lorentzienne ici mais bon^^
         
 
 #        x_1=res_x[0:184]
 #        y_1=res_y[0:184]
 #        x_2=res_x[184:368]
 #        y_2=res_y[184:368]
-#       
+      
 #        p_1=[y_1[np.argmax(y_1)],x_1[np.argmax(y_1)],0.0001,0]
 #        p_2=[y_2[np.argmax(y_2)],x_2[np.argmax(y_2)],0.0001,0]
 #        popt1, pcov1 = curve_fit(lorentz, x_1, y_1,p_1)
 #        popt2, pcov2 = curve_fit(lorentz, x_2, y_2,p_2)
 #        fig=plt.figure()
-#        
+       
 #        plt.plot(res_x,res_y)
 #        plt.plot(x_1,lorentz(x_1,*popt1))
 #        plt.plot(x_2,lorentz(x_2,*poppt2))
-#        plt.title(Natoms[k][0:4]+'mA'+root)
+#        plt.title(Natoms[k][0:4]+'mA'+basename)
 #        splitting=np.append(splitting,slope*(popt2[1]-popt1[1])/2)
 #        Current_mot=np.append(Current_mot,int(Natoms[k][0:4]))
 #        width_1=np.append(width_1, slope*popt1[2])
@@ -346,17 +344,17 @@ def Data_Rabi(root,start,end):
     return splitting, width_1, Current_mot
 
 
-def Rabi_point_by_point(root):
-    os.chdir('C:\\homes\\Manip\\Data\\Labview\\2018\\2018-11-11\\'+root)
-    list = os.listdir('C:\\homes\\Manip\\Data\\Labview\\2018\\2018-11-11\\'+root)
+def Rabi_point_by_point(basename):
+    os.chdir('C:\\homes\\Manip\\Data\\Labview\\2018\\2018-11-11\\'+basename)
+    pathlist = os.listdir('C:\\homes\\Manip\\Data\\Labview\\2018\\2018-11-11\\'+basename)
 
 
     count=0
     shot=[]
     Moyenne=[]
-    for i in range (0,np.size(list)):
-        if len(list[i])<33:
-            a,b=load_data(list[i])
+    for i in range (0,np.size(pathlist)):
+        if len(pathlist[i])<33:
+            a,b=load_data(pathlist[i])
             Moy=np.average(b)
             shot=np.append(shot, count)
             Moyenne=np.append(Moyenne, Moy)
@@ -458,10 +456,10 @@ def Rabi_point_by_point(root):
 
 #
 #
-#root='52mv'
-#splitting, width_1, Current_mot=Data_Rabi(root)
+#basename='52mv'
+#splitting, width_1, Current_mot=Data_Rabi(basename)
 #os.chdir('D:\\Users\\atomchips\\Desktop\\Cavity_protection_20181206\\Data_20181212')
-#np.savetxt(root+'.txt', np.transpose([splitting, width_1, Current_mot]),delimiter='\t',header='\t'.join(['splitting','width_1','Current_mot'])) 
+#np.savetxt(basename+'.txt', np.transpose([splitting, width_1, Current_mot]),delimiter='\t',header='\t'.join(['splitting','width_1','Current_mot'])) 
 #
 #
 
