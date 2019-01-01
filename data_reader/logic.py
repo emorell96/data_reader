@@ -125,7 +125,7 @@ class DataSet:
 
     '''
     #how to initialize (create) a set by calling DataSet(arguments)
-    def __init__(self, _DataFiles = None, **kargs):
+    def __init__(self, _DataFiles = None, type = DataFile, **kargs):
         '''
         Initializes the DataFiles directly. It needs then a list of DataFile.
         DO NOT USE DataSet([path1, path2, ...]) directly instead use the class methods defined below.
@@ -136,7 +136,7 @@ class DataSet:
             self.Note = kargs.get("note")
     
     @classmethod
-    def frompathlist(cls, pathlist, ignore_empty_fn = False, **kargs):
+    def frompathlist(cls, pathlist, type = DataFile, ignore_empty_fn = False, **kargs):
         """ 
         Add a note by using note = "This is my note" as argument when calling it.
         If files is a list of strings where each string represents a 
@@ -149,7 +149,7 @@ class DataSet:
         Filter by value using values = ('0800', '0900') for example.
         Filter by unit using unit = 'ma'.
 
-        Use custom_class to use classes which are derivated from DataFile through inheritance.
+        Use type to use classes which are derivated from DataFile through inheritance.
         """
         data = []
         for path in pathlist:
@@ -165,7 +165,7 @@ class DataSet:
                 #Filename is not empty:
                 #use append:
                 path = os.path.join(directory, filename)
-                cls.__append(path, data, **kargs)#we try adding the file. If not succesful, we raise an error.
+                cls.__append(path, data, type, **kargs)#we try adding the file. If not succesful, we raise an error.
                     
                 continue #move on to the next path.
             #import all files in directory unless ignore_empty_fn = True:
@@ -181,7 +181,7 @@ class DataSet:
                     extensions = kargs.get('ext') if ('ext' in kargs) else ""
                     if entry.path.endswith(extensions):
                         #if kargs["ext"] is empty it's ok, as extensions = "" and all strings end with ""
-                        cls.__append(entry.path, data, **kargs)
+                        cls.__append(entry.path, data, type, **kargs)
             #python 2 way of scaning a dir
             except:
                 #default to the Python 2 way:
@@ -189,7 +189,7 @@ class DataSet:
                     extensions = kargs.get('ext') if ('ext' in kargs) else ""
                 if filename.endswith(extensions):
                         #if kargs["ext"] is empty it's ok, as extensions = "" and all strings end with ""
-                        cls.__append(os.path.join(directory, filename), data, **kargs)
+                        cls.__append(os.path.join(directory, filename), data, type, **kargs)
         if len(data) == 0:
             print("Returning empty DataSet, no file matched your filters.")
         return cls(data, **kargs)
@@ -197,7 +197,7 @@ class DataSet:
     
     #this function is charged of adding a DataFile to the internal list. Here is all the filtering    
     @staticmethod
-    def __append(path, prev_list, **kargs):
+    def __append(path, prev_list, _type, **kargs):
         """
         The function adds a datafile to the internal list.
         It does the validation, i.e. right extension, value, unit, etc.
@@ -209,11 +209,7 @@ class DataSet:
         
         tmpFile = DataFile(path)
         if tmpFile.isvalidselection(**kargs):
-            if "custom_class" in kargs:
-                cc = kargs.get("custom_class")
-                prev_list.append(cc(path))
-            else:
-                prev_list.append(DataFile(path))
+            prev_list.append(_type(path))
         else:
             print("-------------------------")
             print("Current file: "+path)
