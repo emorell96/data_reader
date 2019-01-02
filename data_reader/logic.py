@@ -38,20 +38,18 @@ class DataFile:
         valid = True
         if("ext" in kargs):
             extensions = kargs.get("ext")
-            extensions = [x.strip().lower() for x in extensions]
+            extensions = aux.sanitize(extensions)
             valid *= (("."+self.extension) in extensions)
         if("value" in kargs):
             values = kargs.get("value")
-            values = [x.strip().lower() for x in values]
+            values = aux.sanitize(values)
             valid *= (self.value in values)
         if("unit" in kargs):
-            units = kargs.get("unit")
-            units = [x.strip().lower() for x in units] #makes sure that the lower or capitalletter wont affect a comparison
+            units = aux.sanitize(kargs.get("unit")) #makes sure that the lower or capitalletter wont affect a comparison
             #print("units of the file: " + str(units))
             valid *= (self.unit in units) 
         if("prefix" in kargs):
-            prefixes = kargs.get("prefix")
-            prefixes = [x.strip().lower() for x in prefixes]
+            prefixes = aux.sanitize(kargs.get("prefix"))
             valid *= self.prefix != "" and (self.prefix in prefixes)
         #as you can see you can add many more criteria in a very general way.
         #you just have to define put arg1 = value1 and create the code here to deal
@@ -154,7 +152,10 @@ class DataSet:
         Filter by value using value = ('0800', '0900') for example.
         Filter by unit using unit = ('ma', ).
 
-        ALL FILTERS NEED TO BE PUT IN TUPLES EVEN IF A SINGLE VALUE. TODO: Allow for string input.
+        ALL FILTERS CAN BE PUT IN TUPLES EVEN IF A SINGLE VALUE.
+        Or USE A SINGLE STRING FOR INPUT.
+        
+        value = "0800" is valid.
 
         Use type to use classes which are derivated from DataFile through inheritance.
         """
