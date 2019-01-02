@@ -27,8 +27,13 @@ def basic_read_string(str, date_time_patern):
     results[2] = datetime.strptime(results[2], date_time_patern)
     
     return [prefix] + results
-
-    
+def sanitize(input):
+    """
+    strips and lowers the input which can be an iterable of strings or a str.
+    """
+    if isinstance(input, str):
+        return input.lower().strip()
+    return [x.strip().lower() for x in input]    
     
 if (__name__ == '__main__'):
     print('Executing as standalone script')
