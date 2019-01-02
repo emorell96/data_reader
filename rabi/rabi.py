@@ -23,12 +23,12 @@ class RabiFile(dr.logic.DataFile):
             self.x_range = kargs.get("x_range")
         if "y_range" in kargs:
             self.y_range = kargs.get("y_range")
-    def peak_global(self, x_y_mode = False):
+    def peak(self, x_y_mode = False):
         #group2 equivalent
         x, y =self._data_prep()
         max = np.argmax(y)
         return (max, y[max]) if not x_y_mode else (x[max], y[max])
-    def peaks_rabi_very_coarse(self, x_y_mode = False):
+    def peaks(self, x_y_mode = False):
         """
         Data needs to have both peaks in different halfs of the files.
         If x_y_mode true the function returns the peaks not in terms of row number # but in x coordinates. 
@@ -57,9 +57,24 @@ class RabiFile(dr.logic.DataFile):
         if(hasattr(self, "y_range")):
             y = y[self.y_range[0]:self.y_range[1]]
         return x, y
+    def in_phase(self, rabifile, rabi_split = False):
+        print(self.filename)
+        x, y = self._data_prep()
+        res_y = np.zeros(y.shape())
+        delta = self.peak()[0] - rabifile.peak()[0]
+        tab=np.zeros(abs(delta))
+        if delta>0:
+            y=y[delta:]
+            y=np.append(y,tab)
+        if delta<0:
+            y=y[:delta] #delta < 0 so it will slice from the end
+            y=np.append(tab,y) #will have same size as initially.
+        return x, res_y + y
+        
+
 if(__name__ == "__main__"):
     dr.logic.DataFile(r"F:\Onedrive\Academic Files\LKB\rabi_fitting\data\power0009µW_2018-12-18-16.27.44.csv")
     #test of the rabifile:
     rabifile = RabiFile(r"F:\Onedrive\Academic Files\LKB\rabi_fitting\data\power0009µW_2018-12-18-16.27.44.csv")
     rabifile.set_delimeter("\t")
-    print(rabifile.peaks_rabi_very_coarse(x_y_mode=True))
+    print(rabifile.peaks(x_y_mode=True))
